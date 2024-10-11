@@ -1,0 +1,64 @@
+using UnityEngine;
+using TMPro;
+
+public class UpdateCollectibleCount : MonoBehaviour
+{
+    private TextMeshProUGUI collectibleText; // Reference to the TextMeshProUGUI component
+    private int totalCandies; // Total number of candies in the scene at the start
+    public GameObject endingCard; // Reference to the end card panel (set in Inspector)
+    public TextMeshProUGUI endingText; // Reference to the ending message TextMeshProUGUI
+
+    void Start()
+    {
+        collectibleText = GetComponent<TextMeshProUGUI>();
+        if (collectibleText == null)
+        {
+            Debug.LogError("UpdateCollectibleCount script requires a TextMeshProUGUI component on the same GameObject.");
+            return;
+        }
+
+        // Count the total number of "Candy" objects at the start
+        totalCandies = GameObject.FindGameObjectsWithTag("Candy").Length;
+
+        UpdateCollectibleDisplay(); // Initial update on start
+
+        // Ensure the ending card is hidden at the start
+        if (endingCard != null)
+        {
+            endingCard.SetActive(false);
+        }
+    }
+
+    void Update()
+    {
+        UpdateCollectibleDisplay();
+    }
+
+    private void UpdateCollectibleDisplay()
+    {
+        // Get the current number of "Candy" objects remaining
+        int remainingCandies = GameObject.FindGameObjectsWithTag("Candy").Length;
+
+        // Calculate the number of "Candy" objects collected
+        int collectedCandies = totalCandies - remainingCandies;
+
+        // Update the collectible count display
+        collectibleText.text = $"Candies collected: {collectedCandies}/{totalCandies}";
+
+        // Check if all candies are collected
+        if (collectedCandies >= totalCandies)
+        {
+            DisplayEndCard(); // Show the end card when all candies are collected
+        }
+    }
+
+    private void DisplayEndCard()
+    {
+        if (endingCard != null && endingText != null)
+        {
+            endingCard.SetActive(true); // Show the ending card panel
+            endingText.text = "Congrats, you won!"; // Set the ending message
+            Time.timeScale = 0f; // Optional: Pause the game
+        }
+    }
+}
